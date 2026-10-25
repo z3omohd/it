@@ -46,18 +46,18 @@
 
   <!-- Header -->
   <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-3 space-x-reverse">
-        <div class="bg-blue-600 p-2.5 rounded-xl shadow-inner">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center space-x-3 space-x-reverse w-full sm:w-auto">
+        <div class="bg-blue-600 p-2.5 rounded-xl shadow-inner shrink-0">
           <i class="fa-solid fa-headset text-2xl text-white"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">نظام إدارة وخدمات الدعم التقني</h1>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight">نظام إدارة وخدمات الدعم التقني</h1>
           <p class="text-xs text-slate-400">لوحة المتابعة والتحكم الخاصة بمسؤول الدعم (سحابي 🔥)</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-2 transition">
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-2 transition w-full sm:w-auto justify-center">
           <i class="fa-solid fa-file-excel text-green-400"></i> تصدير البيانات (CSV)
         </button>
       </div>
@@ -68,44 +68,44 @@
   <main class="max-w-7xl mx-auto px-4 py-6 flex-grow space-y-6 w-full">
 
     <!-- KPI Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
         <div>
           <p class="text-xs font-semibold text-slate-500 mb-1">إجمالي الطلبات</p>
-          <h3 id="statTotal" class="text-2xl font-extrabold text-slate-800">0</h3>
+          <h3 id="statTotal" class="text-xl sm:text-2xl font-extrabold text-slate-800">0</h3>
         </div>
-        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
-          <i class="fa-solid fa-list-check text-xl"></i>
+        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 shrink-0">
+          <i class="fa-solid fa-list-check text-lg sm:text-xl"></i>
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
         <div>
           <p class="text-xs font-semibold text-slate-500 mb-1">طلبات جديدة</p>
-          <h3 id="statPending" class="text-2xl font-extrabold text-amber-600">0</h3>
+          <h3 id="statPending" class="text-xl sm:text-2xl font-extrabold text-amber-600">0</h3>
         </div>
-        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
-          <i class="fa-solid fa-clock text-xl"></i>
+        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
+          <i class="fa-solid fa-clock text-lg sm:text-xl"></i>
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
         <div>
           <p class="text-xs font-semibold text-slate-500 mb-1">قيد التنفيذ</p>
-          <h3 id="statProgress" class="text-2xl font-extrabold text-blue-600">0</h3>
+          <h3 id="statProgress" class="text-xl sm:text-2xl font-extrabold text-blue-600">0</h3>
         </div>
-        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
-          <i class="fa-solid fa-spinner text-xl"></i>
+        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+          <i class="fa-solid fa-spinner text-lg sm:text-xl"></i>
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
         <div>
           <p class="text-xs font-semibold text-slate-500 mb-1">مكتملة ومغلقة</p>
-          <h3 id="statResolved" class="text-2xl font-extrabold text-emerald-600">0</h3>
+          <h3 id="statResolved" class="text-xl sm:text-2xl font-extrabold text-emerald-600">0</h3>
         </div>
-        <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-          <i class="fa-solid fa-circle-check text-xl"></i>
+        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+          <i class="fa-solid fa-circle-check text-lg sm:text-xl"></i>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- Column 1: New Ticket Form -->
-      <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-1 space-y-4">
+      <section class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-1 space-y-4">
         <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
           <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-plus-circle text-blue-600"></i> تسجيل طلب صيانة جديد
@@ -174,7 +174,7 @@
       </section>
 
       <!-- Column 2 & 3: Ticket List & Management Table -->
-      <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
+      <section class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
         <div>
           <div class="flex flex-col sm:flex-row gap-3 justify-between items-center border-b border-slate-100 pb-4">
             <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -197,7 +197,7 @@
               <thead>
                 <tr class="bg-slate-50 text-slate-500 text-xs uppercase font-bold border-b border-slate-200">
                   <th class="p-3">رقم الطلب</th>
-                  <th class="p-3">الموظف / الإدارة</th>
+                  <th class="p-3">الموظف / الإدارة والعطل</th>
                   <th class="p-3">نوع الخدمة</th>
                   <th class="p-3">الأولوية</th>
                   <th class="p-3">الحالة</th>
@@ -223,11 +223,17 @@
   <div id="actionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-bold text-slate-800" id="modalTitle">تحديث حالة الطلب</h3>
+        <h3 class="font-bold text-slate-800 text-sm sm:text-base" id="modalTitle">تحديث حالة الطلب</h3>
         <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <input type="hidden" id="modalDocId">
+
+      <!-- تفاصيل المشكلة المعروضة داخل النافذة -->
+      <div id="modalDescBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+        <span class="font-bold text-slate-700 block"><i class="fa-solid fa-circle-info text-blue-500 ml-1"></i> تفاصيل المشكلة / العطل:</span>
+        <p id="modalDescText" class="text-slate-600 leading-relaxed"></p>
+      </div>
 
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">تغيير حالة الطلب</label>
@@ -239,8 +245,8 @@
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">إضافة ملاحظات الفني</label>
-        <textarea id="modalNotes" rows="3" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none resize-none"></textarea>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">إضافة ملاحظات الفني (إجراء الصيانة)</label>
+        <textarea id="modalNotes" rows="3" placeholder="اكتب ما تم إنجازه أو قطع الغيار المطلوبة..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none resize-none"></textarea>
       </div>
 
       <div class="flex gap-2 pt-2">
@@ -278,7 +284,8 @@
       const filtered = rawTickets.filter(t => {
         const matchesSearch = (t.empName || '').toLowerCase().includes(searchVal) || 
                               (t.id || '').toString().includes(searchVal) ||
-                              (t.empDept || '').toLowerCase().includes(searchVal);
+                              (t.empDept || '').toLowerCase().includes(searchVal) ||
+                              (t.desc || '').toLowerCase().includes(searchVal);
         const matchesStatus = (statusFilter === 'الكل') || (t.status === statusFilter);
         return matchesSearch && matchesStatus;
       });
@@ -303,14 +310,16 @@
           <td class="p-3 font-mono text-xs font-bold text-blue-600">#TK-${t.id}</td>
           <td class="p-3">
             <div class="font-semibold text-slate-800 text-xs">${t.empName}</div>
-            <div class="text-[11px] text-slate-400">${t.empDept}</div>
+            <div class="text-[11px] text-slate-400 mb-1">${t.empDept}</div>
+            ${t.desc ? `<div class="text-[11px] text-slate-700 bg-slate-100 p-2 rounded-lg border border-slate-200/80 mt-1.5"><strong class="text-blue-700">تفاصيل العطل:</strong> ${t.desc}</div>` : ''}
+            ${t.notes ? `<div class="text-[11px] text-emerald-800 bg-emerald-50 p-1.5 rounded-lg border border-emerald-200 mt-1"><strong>ملاحظة الفني:</strong> ${t.notes}</div>` : ''}
           </td>
           <td class="p-3 text-xs text-slate-700 font-medium">${t.type}</td>
           <td class="p-3">${getPriorityBadge(t.priority)}</td>
           <td class="p-3">${getStatusBadge(t.status)}</td>
           <td class="p-3 text-center">
             <div class="flex items-center justify-center gap-1">
-              <button onclick="openModal('${t.docId}')" title="تعديل الحالة" class="bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 p-2 rounded-lg text-xs transition">
+              <button onclick="openModal('${t.docId}')" title="تعديل الحالة والملاحظات" class="bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 p-2 rounded-lg text-xs transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
               <button onclick="deleteTicket('${t.docId}')" title="حذف" class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 p-2 rounded-lg text-xs transition">
@@ -372,6 +381,7 @@
 
       document.getElementById('modalDocId').value = docId;
       document.getElementById('modalTitle').textContent = `تحديث الطلب #TK-${ticket.id} (${ticket.empName})`;
+      document.getElementById('modalDescText').textContent = ticket.desc || 'لا يوجد تفاصيل مسجلة لهذا العطل.';
       document.getElementById('modalStatus').value = ticket.status;
       document.getElementById('modalNotes').value = ticket.notes || '';
       
@@ -411,10 +421,10 @@
         return;
       }
 
-      let csvContent = "\uFEFFرقم الطلب,اسم الموظف,الإدارة,نوع الخدمة,الأولوية,الحالة,ملاحظات,التاريخ\n";
+      let csvContent = "\uFEFFرقم الطلب,اسم الموظف,الإدارة,نوع الخدمة,الأولوية,الحالة,تفاصيل العطل,ملاحظات الفني,التاريخ\n";
       
       rawTickets.forEach(t => {
-        csvContent += `"#TK-${t.id}","${t.empName}","${t.empDept}","${t.type}","${t.priority}","${t.status}","${t.notes || ''}","${t.date}"\n`;
+        csvContent += `"#TK-${t.id}","${t.empName}","${t.empDept}","${t.type}","${t.priority}","${t.status}","${t.desc || ''}","${t.notes || ''}","${t.date}"\n`;
       });
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
