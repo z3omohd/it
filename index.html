@@ -10,6 +10,37 @@
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
     body { font-family: 'Tajawal', sans-serif; }
   </style>
+
+  <!-- Firebase SDK Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBW39WArCY-vLUiFk2sIv4THV3u-zDjQxE",
+      authDomain: "it-support-dashboard-fe1ae.firebaseapp.com",
+      projectId: "it-support-dashboard-fe1ae",
+      storageBucket: "it-support-dashboard-fe1ae.firebasestorage.app",
+      messagingSenderId: "1087787425141",
+      appId: "1:1087787425141:web:03fcd3dab1f2590318073c"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const ticketsCol = collection(db, "tickets");
+
+    window.db = db;
+    window.ticketsCol = ticketsCol;
+    window.addDoc = addDoc;
+    window.onSnapshot = onSnapshot;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.deleteDoc = deleteDoc;
+    window.query = query;
+    window.orderBy = orderBy;
+  </script>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
 
@@ -22,7 +53,7 @@
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">نظام إدارة وخدمات الدعم التقني</h1>
-          <p class="text-xs text-slate-400">لوحة المتابعة والتحكم الخاصة بمسؤول الدعم</p>
+          <p class="text-xs text-slate-400">لوحة المتابعة والتحكم الخاصة بمسؤول الدعم (سحابي 🔥)</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -88,7 +119,7 @@
           <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-plus-circle text-blue-600"></i> تسجيل طلب صيانة جديد
           </h2>
-          <span class="text-xs text-slate-400">تغذية مباشرة</span>
+          <span class="text-xs text-slate-400">سحابي مباشر</span>
         </div>
 
         <form id="ticketForm" class="space-y-4">
@@ -136,8 +167,8 @@
             <textarea id="reqDesc" rows="3" placeholder="اكتب تفاصيل العطل أو طلب الموظف هنا..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none"></textarea>
           </div>
 
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-paper-plane"></i> إدراج الطلب في القائمة
+          <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i> حفظ في السحابة
           </button>
         </form>
       </section>
@@ -145,13 +176,11 @@
       <!-- Column 2 & 3: Ticket List & Management Table -->
       <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
         <div>
-          <!-- Table Header Controls -->
           <div class="flex flex-col sm:flex-row gap-3 justify-between items-center border-b border-slate-100 pb-4">
             <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-table-list text-blue-600"></i> سجل ومتابعة طلبات الصيانة
             </h2>
 
-            <!-- Search & Filter Controls -->
             <div class="flex gap-2 w-full sm:w-auto">
               <input type="text" id="searchInput" oninput="renderTickets()" placeholder="بحث باسم الموظف أو رقم الطلب..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-48">
               <select id="statusFilter" onchange="renderTickets()" class="border border-slate-300 rounded-xl px-2 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -163,7 +192,6 @@
             </div>
           </div>
 
-          <!-- Table Container -->
           <div class="overflow-x-auto mt-4">
             <table class="w-full text-sm text-right border-collapse">
               <thead>
@@ -177,23 +205,21 @@
                 </tr>
               </thead>
               <tbody id="ticketsTable" class="divide-y divide-slate-100">
-                <!-- Content generated via JavaScript -->
+                <!-- Data loaded from Firebase -->
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Footer Notice -->
         <div class="text-xs text-slate-400 pt-4 border-t border-slate-100 flex justify-between items-center">
-          <span><i class="fa-solid fa-shield-halved text-slate-400 ml-1"></i> البيانات محفوظة محلياً في متصفحك بأمان.</span>
-          <button onclick="clearAllData()" class="text-red-500 hover:underline text-[11px]">مسح كلي للبيانات</button>
+          <span><i class="fa-solid fa-cloud-check text-emerald-500 ml-1"></i> متصل بسحابة Firebase بنجاح.</span>
         </div>
       </section>
 
     </div>
   </main>
 
-  <!-- Edit / Action Modal -->
+  <!-- Edit Modal -->
   <div id="actionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
@@ -201,7 +227,7 @@
         <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <input type="hidden" id="modalTicketIndex">
+      <input type="hidden" id="modalDocId">
 
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">تغيير حالة الطلب</label>
@@ -213,30 +239,35 @@
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">إضافة ملاحظات الفني (مثل: تم استبدال الكيبل، تم إعداد البرامج)</label>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">إضافة ملاحظات الفني</label>
         <textarea id="modalNotes" rows="3" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none resize-none"></textarea>
       </div>
 
       <div class="flex gap-2 pt-2">
-        <button onclick="saveModalChanges()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition">حفظ التغييرات</button>
+        <button onclick="saveModalChanges()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition">حفظ في السحابة</button>
         <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition">إلغاء</button>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Logic -->
   <script>
-    // LocalStorage initialization
-    let tickets = JSON.parse(localStorage.getItem('it_admin_tickets')) || [];
+    let rawTickets = [];
 
-    // Save tickets to LocalStorage
-    function saveTickets() {
-      localStorage.setItem('it_admin_tickets', JSON.stringify(tickets));
-      renderTickets();
-      updateStats();
-    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const interval = setInterval(() => {
+        if (window.ticketsCol) {
+          clearInterval(interval);
+          const q = window.query(window.ticketsCol, window.orderBy("timestamp", "desc"));
+          
+          window.onSnapshot(q, (snapshot) => {
+            rawTickets = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+            renderTickets();
+            updateStats();
+          });
+        }
+      }, 300);
+    });
 
-    // Render Table Content
     function renderTickets() {
       const tbody = document.getElementById('ticketsTable');
       const searchVal = document.getElementById('searchInput').value.toLowerCase();
@@ -244,10 +275,10 @@
 
       tbody.innerHTML = '';
 
-      const filtered = tickets.filter(t => {
-        const matchesSearch = t.empName.toLowerCase().includes(searchVal) || 
-                              t.id.toString().includes(searchVal) ||
-                              t.empDept.toLowerCase().includes(searchVal);
+      const filtered = rawTickets.filter(t => {
+        const matchesSearch = (t.empName || '').toLowerCase().includes(searchVal) || 
+                              (t.id || '').toString().includes(searchVal) ||
+                              (t.empDept || '').toLowerCase().includes(searchVal);
         const matchesStatus = (statusFilter === 'الكل') || (t.status === statusFilter);
         return matchesSearch && matchesStatus;
       });
@@ -257,7 +288,7 @@
           <tr>
             <td colspan="6" class="text-center py-8 text-slate-400 text-xs">
               <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
-              لا توجد طلبات مطابقة للبحث أو القائمة فارغة حالياً.
+              لا توجد طلبات مطابقة.
             </td>
           </tr>
         `;
@@ -265,7 +296,6 @@
       }
 
       filtered.forEach((t) => {
-        const originalIndex = tickets.indexOf(t);
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
 
@@ -280,10 +310,10 @@
           <td class="p-3">${getStatusBadge(t.status)}</td>
           <td class="p-3 text-center">
             <div class="flex items-center justify-center gap-1">
-              <button onclick="openModal(${originalIndex})" title="تعديل الحالة والملاحظات" class="bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 p-2 rounded-lg text-xs transition">
+              <button onclick="openModal('${t.docId}')" title="تعديل الحالة" class="bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 p-2 rounded-lg text-xs transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteTicket(${originalIndex})" title="حذف الطلب" class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 p-2 rounded-lg text-xs transition">
+              <button onclick="deleteTicket('${t.docId}')" title="حذف" class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 p-2 rounded-lg text-xs transition">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>
@@ -293,7 +323,6 @@
       });
     }
 
-    // Helper Badges
     function getStatusBadge(status) {
       if (status === 'جديد') return `<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2.5 py-1 rounded-full inline-block">جديد 🟡</span>`;
       if (status === 'قيد التنفيذ') return `<span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full inline-block">قيد التنفيذ 🔵</span>`;
@@ -306,16 +335,14 @@
       return `<span class="text-amber-500 font-bold text-[11px]"><i class="fa-solid fa-circle text-[8px] ml-1"></i>عادي</span>`;
     }
 
-    // Update Dashboard Analytics Cards
     function updateStats() {
-      document.getElementById('statTotal').textContent = tickets.length;
-      document.getElementById('statPending').textContent = tickets.filter(t => t.status === 'جديد').length;
-      document.getElementById('statProgress').textContent = tickets.filter(t => t.status === 'قيد التنفيذ').length;
-      document.getElementById('statResolved').textContent = tickets.filter(t => t.status === 'مكتمل').length;
+      document.getElementById('statTotal').textContent = rawTickets.length;
+      document.getElementById('statPending').textContent = rawTickets.filter(t => t.status === 'جديد').length;
+      document.getElementById('statProgress').textContent = rawTickets.filter(t => t.status === 'قيد التنفيذ').length;
+      document.getElementById('statResolved').textContent = rawTickets.filter(t => t.status === 'مكتمل').length;
     }
 
-    // New Ticket Submit Form
-    document.getElementById('ticketForm').addEventListener('submit', (e) => {
+    document.getElementById('ticketForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const newTicket = {
@@ -327,19 +354,23 @@
         desc: document.getElementById('reqDesc').value.trim(),
         status: 'جديد',
         notes: '',
-        date: new Date().toLocaleDateString('ar-SA')
+        date: new Date().toLocaleDateString('ar-SA'),
+        timestamp: Date.now()
       };
 
-      tickets.unshift(newTicket);
-      saveTickets();
-
-      e.target.reset();
+      try {
+        await window.addDoc(window.ticketsCol, newTicket);
+        e.target.reset();
+      } catch (err) {
+        alert('حدث خطأ في الحفظ، تأكد من إعداد Firestore في Firebase.');
+      }
     });
 
-    // Modal Actions
-    function openModal(index) {
-      const ticket = tickets[index];
-      document.getElementById('modalTicketIndex').value = index;
+    function openModal(docId) {
+      const ticket = rawTickets.find(t => t.docId === docId);
+      if (!ticket) return;
+
+      document.getElementById('modalDocId').value = docId;
       document.getElementById('modalTitle').textContent = `تحديث الطلب #TK-${ticket.id} (${ticket.empName})`;
       document.getElementById('modalStatus').value = ticket.status;
       document.getElementById('modalNotes').value = ticket.notes || '';
@@ -353,39 +384,36 @@
       document.getElementById('actionModal').classList.remove('flex');
     }
 
-    function saveModalChanges() {
-      const index = document.getElementById('modalTicketIndex').value;
-      tickets[index].status = document.getElementById('modalStatus').value;
-      tickets[index].notes = document.getElementById('modalNotes').value.trim();
-      
-      saveTickets();
+    async function saveModalChanges() {
+      const docId = document.getElementById('modalDocId').value;
+      const newStatus = document.getElementById('modalStatus').value;
+      const newNotes = document.getElementById('modalNotes').value.trim();
+
+      const docRef = window.doc(window.db, "tickets", docId);
+      await window.updateDoc(docRef, {
+        status: newStatus,
+        notes: newNotes
+      });
+
       closeModal();
     }
 
-    function deleteTicket(index) {
-      if (confirm('هل أنت تأكد من رغبتك في حذف هذا الطلب؟')) {
-        tickets.splice(index, 1);
-        saveTickets();
+    async function deleteTicket(docId) {
+      if (confirm('هل أنت متاكد من حذف هذا الطلب من السحابة؟')) {
+        const docRef = window.doc(window.db, "tickets", docId);
+        await window.deleteDoc(docRef);
       }
     }
 
-    function clearAllData() {
-      if (confirm('تنبيه: هل أنت متاكد من مسح جميع الطلبات والبيانات؟')) {
-        tickets = [];
-        saveTickets();
-      }
-    }
-
-    // Export to Excel / CSV
     function exportToCSV() {
-      if (tickets.length === 0) {
+      if (rawTickets.length === 0) {
         alert('لا توجد بيانات لتصديرها.');
         return;
       }
 
       let csvContent = "\uFEFFرقم الطلب,اسم الموظف,الإدارة,نوع الخدمة,الأولوية,الحالة,ملاحظات,التاريخ\n";
       
-      tickets.forEach(t => {
+      rawTickets.forEach(t => {
         csvContent += `"#TK-${t.id}","${t.empName}","${t.empDept}","${t.type}","${t.priority}","${t.status}","${t.notes || ''}","${t.date}"\n`;
       });
 
@@ -398,10 +426,6 @@
       link.click();
       document.body.removeChild(link);
     }
-
-    // Initial Load
-    renderTickets();
-    updateStats();
   </script>
 </body>
 </html>
