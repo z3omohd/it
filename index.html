@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم وتتبع خدمات الدعم التقني | IT Helpdesk Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+    body { font-family: 'Tajawal', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3 space-x-reverse">
+        <div class="bg-blue-600 p-2.5 rounded-xl shadow-inner">
+          <i class="fa-solid fa-headset text-2xl text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">نظام إدارة وخدمات الدعم التقني</h1>
+          <p class="text-xs text-slate-400">لوحة المتابعة والتحكم الخاصة بمسؤول الدعم</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-2 transition">
+          <i class="fa-solid fa-file-excel text-green-400"></i> تصدير البيانات (CSV)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-grow space-y-6 w-full">
+
+    <!-- KPI Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 mb-1">إجمالي الطلبات</p>
+          <h3 id="statTotal" class="text-2xl font-extrabold text-slate-800">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
+          <i class="fa-solid fa-list-check text-xl"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 mb-1">طلبات جديدة</p>
+          <h3 id="statPending" class="text-2xl font-extrabold text-amber-600">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+          <i class="fa-solid fa-clock text-xl"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 mb-1">قيد التنفيذ</p>
+          <h3 id="statProgress" class="text-2xl font-extrabold text-blue-600">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+          <i class="fa-solid fa-spinner text-xl"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 mb-1">مكتملة ومغلقة</p>
+          <h3 id="statResolved" class="text-2xl font-extrabold text-emerald-600">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+          <i class="fa-solid fa-circle-check text-xl"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout Grid: Form vs Table -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Column 1: New Ticket Form -->
+      <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-1 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-plus-circle text-blue-600"></i> تسجيل طلب صيانة جديد
+          </h2>
+          <span class="text-xs text-slate-400">تغذية مباشرة</span>
+        </div>
+
+        <form id="ticketForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الموظف صاحب الطلب *</label>
+            <input type="text" id="empName" required placeholder="مثال: عبد المحسن السعيد" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">الإدارة / القسم *</label>
+            <select id="empDept" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+              <option value="">اختر الإدارة...</option>
+              <option value="مكتب الوكيل">مكتب الوكيل</option>
+              <option value="الإدارة العامة لقياس الأداء">الإدارة العامة لقياس الأداء</option>
+              <option value="الإدارة العامة للتخطيط">الإدارة العامة للتخطيط</option>
+              <option value="إدارة التخطيط المدرسي">إدارة التخطيط المدرسي</option>
+              <option value="إدارة أخرى">إدارة أخرى</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">تصنيف الخدمة *</label>
+              <select id="reqType" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                <option value="تفعيل/إصلاح تحويلة">تفعيل/إصلاح تحويلة</option>
+                <option value="إصلاح نقطة شبكة / IP">إصلاح نقطة شبكة / IP</option>
+                <option value="صيانة جهاز حاسب">صيانة جهاز حاسب</option>
+                <option value="صيانة/إعداد طابعة">صيانة/إعداد طابعة</option>
+                <option value="مشكلة برامج وأوفيس">مشكلة برامج وأوفيس</option>
+                <option value="طلب دعم عام">طلب دعم عام</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">مستوى الأولوية</label>
+              <select id="priority" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                <option value="عادي">عادي 🟡</option>
+                <option value="عاجل">عاجل 🔴</option>
+                <option value="منخفض">منخفض 🔵</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">تفاصيل المشكلة / الملاحظات الأولية</label>
+            <textarea id="reqDesc" rows="3" placeholder="اكتب تفاصيل العطل أو طلب الموظف هنا..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none"></textarea>
+          </div>
+
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> إدراج الطلب في القائمة
+          </button>
+        </form>
+      </section>
+
+      <!-- Column 2 & 3: Ticket List & Management Table -->
+      <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
+        <div>
+          <!-- Table Header Controls -->
+          <div class="flex flex-col sm:flex-row gap-3 justify-between items-center border-b border-slate-100 pb-4">
+            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-table-list text-blue-600"></i> سجل ومتابعة طلبات الصيانة
+            </h2>
+
+            <!-- Search & Filter Controls -->
+            <div class="flex gap-2 w-full sm:w-auto">
+              <input type="text" id="searchInput" oninput="renderTickets()" placeholder="بحث باسم الموظف أو رقم الطلب..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-48">
+              <select id="statusFilter" onchange="renderTickets()" class="border border-slate-300 rounded-xl px-2 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <option value="الكل">جميع الحالات</option>
+                <option value="جديد">جديد</option>
+                <option value="قيد التنفيذ">قيد التنفيذ</option>
+                <option value="مكتمل">مكتمل</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm text-right border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase font-bold border-b border-slate-200">
+                  <th class="p-3">رقم الطلب</th>
+                  <th class="p-3">الموظف / الإدارة</th>
+                  <th class="p-3">نوع الخدمة</th>
+                  <th class="p-3">الأولوية</th>
+                  <th class="p-3">الحالة</th>
+                  <th class="p-3 text-center">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="ticketsTable" class="divide-y divide-slate-100">
+                <!-- Content generated via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer Notice -->
+        <div class="text-xs text-slate-400 pt-4 border-t border-slate-100 flex justify-between items-center">
+          <span><i class="fa-solid fa-shield-halved text-slate-400 ml-1"></i> البيانات محفوظة محلياً في متصفحك بأمان.</span>
+          <button onclick="clearAllData()" class="text-red-500 hover:underline text-[11px]">مسح كلي للبيانات</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Edit / Action Modal -->
+  <div id="actionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-800" id="modalTitle">تحديث حالة الطلب</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <input type="hidden" id="modalTicketIndex">
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">تغيير حالة الطلب</label>
+        <select id="modalStatus" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none">
+          <option value="جديد">جديد 🟡</option>
+          <option value="قيد التنفيذ">قيد التنفيذ 🔵</option>
+          <option value="مكتمل">مكتمل 🟢</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">إضافة ملاحظات الفني (مثل: تم استبدال الكيبل، تم إعداد البرامج)</label>
+        <textarea id="modalNotes" rows="3" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none resize-none"></textarea>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="saveModalChanges()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition">حفظ التغييرات</button>
+        <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // LocalStorage initialization
+    let tickets = JSON.parse(localStorage.getItem('it_admin_tickets')) || [];
+
+    // Save tickets to LocalStorage
+    function saveTickets() {
+      localStorage.setItem('it_admin_tickets', JSON.stringify(tickets));
+      renderTickets();
+      updateStats();
+    }
+
+    // Render Table Content
+    function renderTickets() {
+      const tbody = document.getElementById('ticketsTable');
+      const searchVal = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      tbody.innerHTML = '';
+
+      const filtered = tickets.filter(t => {
+        const matchesSearch = t.empName.toLowerCase().includes(searchVal) || 
+                              t.id.toString().includes(searchVal) ||
+                              t.empDept.toLowerCase().includes(searchVal);
+        const matchesStatus = (statusFilter === 'الكل') || (t.status === statusFilter);
+        return matchesSearch && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-8 text-slate-400 text-xs">
+              <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+              لا توجد طلبات مطابقة للبحث أو القائمة فارغة حالياً.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach((t) => {
+        const originalIndex = tickets.indexOf(t);
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        tr.innerHTML = `
+          <td class="p-3 font-mono text-xs font-bold text-blue-600">#TK-${t.id}</td>
+          <td class="p-3">
+            <div class="font-semibold text-slate-800 text-xs">${t.empName}</div>
+            <div class="text-[11px] text-slate-400">${t.empDept}</div>
+          </td>
+          <td class="p-3 text-xs text-slate-700 font-medium">${t.type}</td>
+          <td class="p-3">${getPriorityBadge(t.priority)}</td>
+          <td class="p-3">${getStatusBadge(t.status)}</td>
+          <td class="p-3 text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button onclick="openModal(${originalIndex})" title="تعديل الحالة والملاحظات" class="bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 p-2 rounded-lg text-xs transition">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button onclick="deleteTicket(${originalIndex})" title="حذف الطلب" class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 p-2 rounded-lg text-xs transition">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Helper Badges
+    function getStatusBadge(status) {
+      if (status === 'جديد') return `<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2.5 py-1 rounded-full inline-block">جديد 🟡</span>`;
+      if (status === 'قيد التنفيذ') return `<span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-1 rounded-full inline-block">قيد التنفيذ 🔵</span>`;
+      return `<span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full inline-block">مكتمل 🟢</span>`;
+    }
+
+    function getPriorityBadge(priority) {
+      if (priority === 'عاجل') return `<span class="text-red-600 font-bold text-[11px]"><i class="fa-solid fa-circle text-[8px] ml-1"></i>عاجل</span>`;
+      if (priority === 'منخفض') return `<span class="text-blue-500 font-bold text-[11px]"><i class="fa-solid fa-circle text-[8px] ml-1"></i>منخفض</span>`;
+      return `<span class="text-amber-500 font-bold text-[11px]"><i class="fa-solid fa-circle text-[8px] ml-1"></i>عادي</span>`;
+    }
+
+    // Update Dashboard Analytics Cards
+    function updateStats() {
+      document.getElementById('statTotal').textContent = tickets.length;
+      document.getElementById('statPending').textContent = tickets.filter(t => t.status === 'جديد').length;
+      document.getElementById('statProgress').textContent = tickets.filter(t => t.status === 'قيد التنفيذ').length;
+      document.getElementById('statResolved').textContent = tickets.filter(t => t.status === 'مكتمل').length;
+    }
+
+    // New Ticket Submit Form
+    document.getElementById('ticketForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const newTicket = {
+        id: Math.floor(1000 + Math.random() * 9000),
+        empName: document.getElementById('empName').value.trim(),
+        empDept: document.getElementById('empDept').value,
+        type: document.getElementById('reqType').value,
+        priority: document.getElementById('priority').value,
+        desc: document.getElementById('reqDesc').value.trim(),
+        status: 'جديد',
+        notes: '',
+        date: new Date().toLocaleDateString('ar-SA')
+      };
+
+      tickets.unshift(newTicket);
+      saveTickets();
+
+      e.target.reset();
+    });
+
+    // Modal Actions
+    function openModal(index) {
+      const ticket = tickets[index];
+      document.getElementById('modalTicketIndex').value = index;
+      document.getElementById('modalTitle').textContent = `تحديث الطلب #TK-${ticket.id} (${ticket.empName})`;
+      document.getElementById('modalStatus').value = ticket.status;
+      document.getElementById('modalNotes').value = ticket.notes || '';
+      
+      document.getElementById('actionModal').classList.remove('hidden');
+      document.getElementById('actionModal').classList.add('flex');
+    }
+
+    function closeModal() {
+      document.getElementById('actionModal').classList.add('hidden');
+      document.getElementById('actionModal').classList.remove('flex');
+    }
+
+    function saveModalChanges() {
+      const index = document.getElementById('modalTicketIndex').value;
+      tickets[index].status = document.getElementById('modalStatus').value;
+      tickets[index].notes = document.getElementById('modalNotes').value.trim();
+      
+      saveTickets();
+      closeModal();
+    }
+
+    function deleteTicket(index) {
+      if (confirm('هل أنت تأكد من رغبتك في حذف هذا الطلب؟')) {
+        tickets.splice(index, 1);
+        saveTickets();
+      }
+    }
+
+    function clearAllData() {
+      if (confirm('تنبيه: هل أنت متاكد من مسح جميع الطلبات والبيانات؟')) {
+        tickets = [];
+        saveTickets();
+      }
+    }
+
+    // Export to Excel / CSV
+    function exportToCSV() {
+      if (tickets.length === 0) {
+        alert('لا توجد بيانات لتصديرها.');
+        return;
+      }
+
+      let csvContent = "\uFEFFرقم الطلب,اسم الموظف,الإدارة,نوع الخدمة,الأولوية,الحالة,ملاحظات,التاريخ\n";
+      
+      tickets.forEach(t => {
+        csvContent += `"#TK-${t.id}","${t.empName}","${t.empDept}","${t.type}","${t.priority}","${t.status}","${t.notes || ''}","${t.date}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `IT_Support_Report_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Initial Load
+    renderTickets();
+    updateStats();
+  </script>
+</body>
+</html>
