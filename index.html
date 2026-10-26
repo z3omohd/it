@@ -151,6 +151,11 @@
           </div>
 
           <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">البريد الإلكتروني *</label>
+            <input type="email" id="empEmail" required placeholder="example@domain.gov.sa" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition dir-ltr text-right">
+          </div>
+
+          <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">الإدارة / القسم *</label>
             <select id="empDept" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
               <option value="">اختر الإدارة...</option>
@@ -204,7 +209,7 @@
             </h2>
 
             <div class="flex gap-2 w-full sm:w-auto">
-              <input type="text" id="searchInput" oninput="renderTickets()" placeholder="بحث باسم الموظف أو رقم الطلب..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-48">
+              <input type="text" id="searchInput" oninput="renderTickets()" placeholder="بحث باسم الموظف أو البريد أو رقم الطلب..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-56">
               <select id="statusFilter" onchange="renderTickets()" class="border border-slate-300 rounded-xl px-2 py-1.5 text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 <option value="الكل">جميع الحالات</option>
                 <option value="جديد">جديد</option>
@@ -227,14 +232,14 @@
                 </tr>
               </thead>
               <tbody id="ticketsTable" class="divide-y divide-slate-100">
-                <!-- Data loaded from Firebase -->
+                <!-- Data loaded dynamically -->
               </tbody>
             </table>
           </div>
         </div>
 
         <div class="text-xs text-slate-400 pt-4 border-t border-slate-100 flex justify-between items-center">
-          <span><i class="fa-solid fa-cloud-check text-emerald-500 ml-1"></i> متصل بسحابة Firebase بنجاح.</span>
+          <span><i class="fa-solid fa-check-circle text-emerald-500 ml-1"></i> النظام متصل وجاهز للعمل.</span>
         </div>
       </section>
 
@@ -301,7 +306,7 @@
       </div>
 
       <div class="flex gap-2 pt-2">
-        <button onclick="saveModalChanges()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition">حفظ في السحابة</button>
+        <button onclick="saveModalChanges()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition">حفظ التغييرات</button>
         <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition">إلغاء</button>
       </div>
     </div>
@@ -386,6 +391,7 @@
 
       const filtered = rawTickets.filter(t => {
         const matchesSearch = (t.empName || '').toLowerCase().includes(searchVal) || 
+                              (t.empEmail || '').toLowerCase().includes(searchVal) || 
                               (t.id || '').toString().includes(searchVal) ||
                               (t.empDept || '').toLowerCase().includes(searchVal) ||
                               (t.desc || '').toLowerCase().includes(searchVal);
@@ -413,6 +419,7 @@
           <td class="p-3 font-mono text-xs font-bold text-blue-600">#TK-${t.id}</td>
           <td class="p-3">
             <div class="font-semibold text-slate-800 text-xs">${t.empName}</div>
+            <div class="text-[11px] text-blue-600 font-mono" dir="ltr" style="text-align: right;">${t.empEmail || ''}</div>
             <div class="text-[11px] text-slate-400 mb-1">${t.empDept}</div>
             ${t.desc ? `<div class="text-[11px] text-slate-700 bg-slate-100 p-2 rounded-lg border border-slate-200/80 mt-1.5"><strong class="text-blue-700">تفاصيل العطل:</strong> ${t.desc}</div>` : ''}
             ${t.notes ? `<div class="text-[11px] text-emerald-800 bg-emerald-50 p-1.5 rounded-lg border border-emerald-200 mt-1"><strong>ملاحظة الفني:</strong> ${t.notes}</div>` : ''}
@@ -464,6 +471,7 @@
       const newTicket = {
         id: randomId,
         empName: document.getElementById('empName').value.trim(),
+        empEmail: document.getElementById('empEmail').value.trim(),
         empDept: document.getElementById('empDept').value,
         type: document.getElementById('reqType').value,
         priority: document.getElementById('priority').value,
@@ -535,10 +543,10 @@
         return;
       }
 
-      let csvContent = "\uFEFFرقم الطلب,اسم الموظف,الإدارة,نوع الخدمة,الأولوية,الحالة,تفاصيل العطل,ملاحظات الفني,التاريخ\n";
+      let csvContent = "\uFEFFرقم الطلب,اسم الموظف,البريد الإلكتروني,الإدارة,نوع الخدمة,الأولوية,الحالة,تفاصيل العطل,ملاحظات الفني,التاريخ\n";
       
       rawTickets.forEach(t => {
-        csvContent += `"#TK-${t.id}","${t.empName}","${t.empDept}","${t.type}","${t.priority}","${t.status}","${t.desc || ''}","${t.notes || ''}","${t.date}"\n`;
+        csvContent += `"#TK-${t.id}","${t.empName}","${t.empEmail || ''}","${t.empDept}","${t.type}","${t.priority}","${t.status}","${t.desc || ''}","${t.notes || ''}","${t.date}"\n`;
       });
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
