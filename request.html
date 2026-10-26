@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقديم طلب دعم تقني</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+    body { font-family: 'Tajawal', sans-serif; }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBW39WArCY-vLUiFk2sIv4THV3u-zDjQxE",
+      authDomain: "it-support-dashboard-fe1ae.firebaseapp.com",
+      projectId: "it-support-dashboard-fe1ae",
+      storageBucket: "it-support-dashboard-fe1ae.firebasestorage.app",
+      messagingSenderId: "1087787425141",
+      appId: "1:1087787425141:web:03fcd3dab1f2590318073c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const ticketsCol = collection(db, "tickets");
+
+    window.addDoc = addDoc;
+    window.ticketsCol = ticketsCol;
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white shadow-md py-4 px-4 text-center">
+    <div class="max-w-md mx-auto flex items-center justify-center gap-3">
+      <div class="bg-blue-600 p-2.5 rounded-xl">
+        <i class="fa-solid fa-headset text-2xl"></i>
+      </div>
+      <div class="text-right">
+        <h1 class="text-lg font-bold">بوابة طلبات الدعم التقني</h1>
+        <p class="text-xs text-slate-400">نظام تسجيل البلاغات والصيانة الذاتي</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Form Container -->
+  <main class="max-w-md w-full mx-auto p-4 flex-grow flex items-center">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 w-full space-y-4">
+      
+      <div id="successAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-xs space-y-1 text-center">
+        <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mb-1 block"></i>
+        <p class="font-bold text-sm">تم إرسال طلبك بنجاح!</p>
+        <p class="text-slate-600" id="ticketIdText"></p>
+        <p class="text-[11px] text-slate-400">سيتواصل معك فريق الدعم التقني لمتابعة الطلب.</p>
+      </div>
+
+      <form id="employeeForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الموظف الثلاثي *</label>
+          <input type="text" id="empName" required placeholder="مثال: عبد المحسن السعيد" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">الإدارة / القسم *</label>
+          <select id="empDept" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+            <option value="">اختر الإدارة...</option>
+            <option value="مكتب الوكيل">مكتب الوكيل</option>
+            <option value="الإدارة العامة لقياس الأداء">الإدارة العامة لقياس الأداء</option>
+            <option value="الإدارة العامة للتخطيط">الإدارة العامة للتخطيط</option>
+            <option value="إدارة التخطيط المدرسي">إدارة التخطيط المدرسي</option>
+            <option value="إدارة أخرى">إدارة أخرى</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">نوع الخدمة *</label>
+            <select id="reqType" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+              <option value="تفعيل/إصلاح تحويلة">تفعيل/إصلاح تحويلة</option>
+              <option value="إصلاح نقطة شبكة / IP">إصلاح نقطة شبكة / IP</option>
+              <option value="صيانة جهاز حاسب">صيانة جهاز حاسب</option>
+              <option value="صيانة/إعداد طابعة">صيانة/إعداد طابعة</option>
+              <option value="مشكلة برامج وأوفيس">مشكلة برامج وأوفيس</option>
+              <option value="طلب دعم عام">طلب دعم عام</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">مستوى الأولوية</label>
+            <select id="priority" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+              <option value="عادي">عادي 🟡</option>
+              <option value="عاجل">عاجل 🔴</option>
+              <option value="منخفض">منخفض 🔵</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">تفاصيل المشكلة / العطل *</label>
+          <textarea id="reqDesc" required rows="3" placeholder="اكتب تفاصيل العطل أو المشكلة بدقة..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none"></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> إرسال الطلب
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="text-center py-3 text-[11px] text-slate-400 border-t border-slate-200 bg-white">
+    إدارة خدمات الدعم التقني © 2026
+  </footer>
+
+  <script>
+    document.getElementById('employeeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...`;
+
+      const randomId = Math.floor(1000 + Math.random() * 9000);
+      const newTicket = {
+        id: randomId,
+        empName: document.getElementById('empName').value.trim(),
+        empDept: document.getElementById('empDept').value,
+        type: document.getElementById('reqType').value,
+        priority: document.getElementById('priority').value,
+        desc: document.getElementById('reqDesc').value.trim(),
+        status: 'جديد',
+        notes: '',
+        date: new Date().toLocaleDateString('ar-SA'),
+        timestamp: Date.now()
+      };
+
+      try {
+        await window.addDoc(window.ticketsCol, newTicket);
+        document.getElementById('employeeForm').reset();
+        document.getElementById('employeeForm').classList.add('hidden');
+        document.getElementById('ticketIdText').textContent = `رقم الطلب الخاص بك هو: #TK-${randomId}`;
+        document.getElementById('successAlert').classList.remove('hidden');
+      } catch (err) {
+        alert('حدث خطأ أثناء إرسال الطلب، يرجى المحاولة لاحقاً.');
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> إرسال الطلب`;
+      }
+    });
+  </script>
+</body>
+</html>
