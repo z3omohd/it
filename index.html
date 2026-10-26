@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم وتتبع خدمات الدعم التقني | IT Helpdesk Dashboard</title>
+  <title>نظام خدمات الدعم التقني | IT Helpdesk Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -45,20 +45,27 @@
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
 
   <!-- Header -->
-  <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+  <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center space-x-3 space-x-reverse w-full sm:w-auto">
         <div class="bg-blue-600 p-2.5 rounded-xl shadow-inner shrink-0">
-          <i class="fa-solid fa-headset text-2xl text-white"></i>
+          <i class="fa-solid fa-headset text-xl text-white"></i>
         </div>
-        <div>
-          <h1 class="text-lg sm:text-xl font-bold tracking-tight">نظام إدارة وخدمات الدعم التقني</h1>
-          <p class="text-xs text-slate-400">لوحة المتابعة والتحكم الخاصة بمسؤول الدعم (سحابي 🔥)</p>
+        <div class="min-w-0">
+          <h1 class="text-base sm:text-xl font-bold tracking-tight truncate">نظام إدارة خدمات الدعم التقني</h1>
+          <p class="text-[11px] sm:text-xs text-slate-400 truncate">بوابة تقديم ومتابعة الطلبات السحابية 🔥</p>
         </div>
       </div>
+      
       <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-        <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-2 transition w-full sm:w-auto justify-center">
-          <i class="fa-solid fa-file-excel text-green-400"></i> تصدير البيانات (CSV)
+        <!-- Admin Export Button (Shown only when unlocked) -->
+        <button id="exportBtn" onclick="exportToCSV()" class="hidden bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg items-center gap-1.5 transition">
+          <i class="fa-solid fa-file-excel text-green-400"></i> تصدير (CSV)
+        </button>
+        
+        <!-- Golden Lock / Unlock Button -->
+        <button id="authBtn" onclick="handleAuthAction()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2 shadow-md shadow-amber-500/20 transition">
+          <i class="fa-solid fa-lock text-amber-950" id="authIcon"></i> <span id="authText">دخول الدعم التقني</span>
         </button>
       </div>
     </div>
@@ -67,8 +74,8 @@
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 py-6 flex-grow space-y-6 w-full">
 
-    <!-- KPI Stats Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <!-- KPI Stats Cards (Admin Only) -->
+    <div id="statsSection" class="hidden grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
         <div>
           <p class="text-xs font-semibold text-slate-500 mb-1">إجمالي الطلبات</p>
@@ -110,16 +117,23 @@
       </div>
     </div>
 
-    <!-- Layout Grid: Form vs Table -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Dynamic Layout Grid -->
+    <div id="mainLayout" class="grid grid-cols-1 gap-6 max-w-xl mx-auto w-full">
 
-      <!-- Column 1: New Ticket Form -->
-      <section class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-1 space-y-4">
+      <!-- Employee Ticket Form (Centered for employees, expands for admin) -->
+      <section id="formSection" class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 space-y-4 w-full transition-all duration-300">
         <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
           <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-plus-circle text-blue-600"></i> تسجيل طلب صيانة جديد
           </h2>
-          <span class="text-xs text-slate-400">سحابي مباشر</span>
+          <span class="text-xs text-slate-400">إرسال سحابي مباشر</span>
+        </div>
+
+        <div id="successAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-xs space-y-1 text-center">
+          <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mb-1 block"></i>
+          <p class="font-bold text-sm">تم إرسال طلبك بنجاح!</p>
+          <p class="text-slate-600" id="ticketIdText"></p>
+          <p class="text-[11px] text-slate-400">سيتواصل معك فريق الدعم التقني لمتابعة الطلب.</p>
         </div>
 
         <form id="ticketForm" class="space-y-4">
@@ -163,18 +177,18 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">تفاصيل المشكلة / الملاحظات الأولية</label>
-            <textarea id="reqDesc" rows="3" placeholder="اكتب تفاصيل العطل أو طلب الموظف هنا..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none"></textarea>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">تفاصيل المشكلة / الملاحظات الأولية *</label>
+            <textarea id="reqDesc" required rows="3" placeholder="اكتب تفاصيل العطل أو طلب الموظف هنا..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none"></textarea>
           </div>
 
           <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-up"></i> حفظ في السحابة
+            <i class="fa-solid fa-paper-plane"></i> إرسال الطلب للسحابة
           </button>
         </form>
       </section>
 
-      <!-- Column 2 & 3: Ticket List & Management Table -->
-      <section class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
+      <!-- Admin Ticket List Table (Hidden for standard users) -->
+      <section id="tableSection" class="hidden bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 space-y-4 flex-col justify-between lg:col-span-2">
         <div>
           <div class="flex flex-col sm:flex-row gap-3 justify-between items-center border-b border-slate-100 pb-4">
             <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -219,7 +233,27 @@
     </div>
   </main>
 
-  <!-- Edit Modal -->
+  <!-- Golden Lock / PIN Modal -->
+  <div id="pinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-xs w-full p-6 text-center space-y-4">
+      <div class="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto text-amber-600 shadow-inner">
+        <i class="fa-solid fa-key text-2xl"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-slate-800 text-base">دخول مسئول الدعم</h3>
+        <p class="text-xs text-slate-400 mt-1">أدخل الرقم السري للوصول للوحة التحكم</p>
+      </div>
+      <form onsubmit="checkPIN(event)" class="space-y-3">
+        <input type="password" id="pinInput" required placeholder="أدخل الرقم السري..." class="w-full border border-slate-300 rounded-xl p-2.5 text-center text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono tracking-widest">
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold py-2.5 rounded-xl transition shadow-sm">تأكيد</button>
+          <button type="button" onclick="closePinModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2.5 rounded-xl transition">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Ticket Modal (Admin Only) -->
   <div id="actionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
@@ -229,7 +263,6 @@
 
       <input type="hidden" id="modalDocId">
 
-      <!-- تفاصيل المشكلة المعروضة داخل النافذة -->
       <div id="modalDescBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
         <span class="font-bold text-slate-700 block"><i class="fa-solid fa-circle-info text-blue-500 ml-1"></i> تفاصيل المشكلة / العطل:</span>
         <p id="modalDescText" class="text-slate-600 leading-relaxed"></p>
@@ -257,6 +290,8 @@
   </div>
 
   <script>
+    const ADMIN_PIN = "9552"; // 🔑 الرقم السري للوحة التحكم
+    let isAdminUnlocked = false;
     let rawTickets = [];
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -273,6 +308,56 @@
         }
       }, 300);
     });
+
+    function handleAuthAction() {
+      if (isAdminUnlocked) {
+        // Lock Admin View
+        isAdminUnlocked = false;
+        document.getElementById('statsSection').classList.add('hidden');
+        document.getElementById('tableSection').classList.add('hidden');
+        document.getElementById('tableSection').classList.remove('flex');
+        document.getElementById('exportBtn').classList.add('hidden');
+        document.getElementById('mainLayout').className = "grid grid-cols-1 gap-6 max-w-xl mx-auto w-full";
+        
+        document.getElementById('authIcon').className = "fa-solid fa-lock text-amber-950";
+        document.getElementById('authText').textContent = "دخول الدعم التقني";
+        document.getElementById('authBtn').className = "bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2 shadow-md shadow-amber-500/20 transition";
+      } else {
+        // Open PIN Modal
+        document.getElementById('pinInput').value = '';
+        document.getElementById('pinModal').classList.remove('hidden');
+        document.getElementById('pinModal').classList.add('flex');
+        setTimeout(() => document.getElementById('pinInput').focus(), 100);
+      }
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').classList.add('hidden');
+      document.getElementById('pinModal').classList.remove('flex');
+    }
+
+    function checkPIN(e) {
+      if (e) e.preventDefault();
+      const enteredPIN = document.getElementById('pinInput').value;
+      if (enteredPIN === ADMIN_PIN) {
+        isAdminUnlocked = true;
+        closePinModal();
+
+        // Unlock Admin Dashboard
+        document.getElementById('statsSection').classList.remove('hidden');
+        document.getElementById('tableSection').classList.remove('hidden');
+        document.getElementById('tableSection').classList.add('flex');
+        document.getElementById('exportBtn').classList.remove('hidden');
+        document.getElementById('exportBtn').classList.add('flex');
+        document.getElementById('mainLayout').className = "grid grid-cols-1 lg:grid-cols-3 gap-6 w-full";
+        
+        document.getElementById('authIcon').className = "fa-solid fa-lock-open text-emerald-950";
+        document.getElementById('authText').textContent = "قفل اللوحة 🔒";
+        document.getElementById('authBtn').className = "bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2 shadow-md shadow-emerald-500/20 transition";
+      } else {
+        alert('الرقم السري غير صحيح!');
+      }
+    }
 
     function renderTickets() {
       const tbody = document.getElementById('ticketsTable');
@@ -353,9 +438,13 @@
 
     document.getElementById('ticketForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...`;
+
+      const randomId = Math.floor(1000 + Math.random() * 9000);
       const newTicket = {
-        id: Math.floor(1000 + Math.random() * 9000),
+        id: randomId,
         empName: document.getElementById('empName').value.trim(),
         empDept: document.getElementById('empDept').value,
         type: document.getElementById('reqType').value,
@@ -369,9 +458,16 @@
 
       try {
         await window.addDoc(window.ticketsCol, newTicket);
-        e.target.reset();
+        document.getElementById('ticketForm').reset();
+        document.getElementById('ticketIdText').textContent = `رقم الطلب الخاص بك هو: #TK-${randomId}`;
+        document.getElementById('successAlert').classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> إرسال الطلب للسحابة`;
+        setTimeout(() => document.getElementById('successAlert').classList.add('hidden'), 6000);
       } catch (err) {
-        alert('حدث خطأ في الحفظ، تأكد من إعداد Firestore في Firebase.');
+        alert('حدث خطأ في الحفظ، يرجى المحاولة لاحقاً.');
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> إرسال الطلب للسحابة`;
       }
     });
 
