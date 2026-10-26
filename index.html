@@ -7,8 +7,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Share+Tech+Mono&display=swap');
     body { font-family: 'Tajawal', sans-serif; }
+    .dos-font { font-family: 'Share Tech Mono', monospace; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .dos-cursor {
+      animation: blink 1s infinite;
+    }
   </style>
 
   <!-- Firebase SDK Modules -->
@@ -42,7 +50,7 @@
     window.orderBy = orderBy;
   </script>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
   <!-- Header -->
   <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-40">
@@ -120,13 +128,13 @@
     <!-- Dynamic Layout Grid -->
     <div id="mainLayout" class="grid grid-cols-1 gap-6 max-w-xl mx-auto w-full">
 
-      <!-- Employee Ticket Form (Centered for employees, expands for admin) -->
+      <!-- Employee Ticket Form -->
       <section id="formSection" class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 space-y-4 w-full transition-all duration-300">
         <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
           <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-plus-circle text-blue-600"></i> تسجيل طلب صيانة جديد
           </h2>
-          <span class="text-xs text-slate-400">إرسال سحابي مباشر</span>
+          <span class="text-xs text-slate-400">إرسال </span>
         </div>
 
         <div id="successAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-xs space-y-1 text-center">
@@ -139,7 +147,7 @@
         <form id="ticketForm" class="space-y-4">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الموظف صاحب الطلب *</label>
-            <input type="text" id="empName" required placeholder="مثال: عبد المحسن السعيد" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+            <input type="text" id="empName" required placeholder="........" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
           </div>
 
           <div>
@@ -187,7 +195,7 @@
         </form>
       </section>
 
-      <!-- Admin Ticket List Table (Hidden for standard users) -->
+      <!-- Admin Ticket List Table -->
       <section id="tableSection" class="hidden bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200/80 space-y-4 flex-col justify-between lg:col-span-2">
         <div>
           <div class="flex flex-col sm:flex-row gap-3 justify-between items-center border-b border-slate-100 pb-4">
@@ -232,6 +240,16 @@
 
     </div>
   </main>
+
+  <!-- DOS-Style Footer Signature -->
+  <footer class="bg-slate-950 border-t border-slate-800 py-3 px-4 text-center mt-6">
+    <div class="inline-flex items-center gap-2 bg-black px-4 py-1.5 rounded-lg border border-emerald-900/60 shadow-inner dir-ltr">
+      <span class="dos-font text-emerald-400 text-xs sm:text-sm tracking-wide">
+        C:\> SYSTEM.SIGNATURE -- "تطوير الدعم التقني في وكالة التخطيط"
+      </span>
+      <span class="inline-block w-2 h-4 bg-emerald-400 dos-cursor"></span>
+    </div>
+  </footer>
 
   <!-- Golden Lock / PIN Modal -->
   <div id="pinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
@@ -290,7 +308,7 @@
   </div>
 
   <script>
-    const ADMIN_PIN = "9552"; // 🔑 الرقم السري للوحة التحكم
+    const ADMIN_PIN = "1234"; // 🔑 الرقم السري للوحة التحكم
     let isAdminUnlocked = false;
     let rawTickets = [];
 
