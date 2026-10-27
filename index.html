@@ -61,7 +61,7 @@
         </div>
         <div class="min-w-0">
           <h1 class="text-base sm:text-xl font-bold tracking-tight truncate">نظام إدارة خدمات الدعم التقني</h1>
-          <p class="text-[11px] sm:text-xs text-slate-400 truncate">بوابة تقديم ومتابعة الطلبات التقنية </p>
+          <p class="text-[11px] sm:text-xs text-slate-400 truncate">.بوابة تقديم ومتابعة الطلبات التقنية.</p>
         </div>
       </div>
       
@@ -316,6 +316,23 @@
     const ADMIN_PIN = "9552"; // 🔑 الرقم السري للوحة التحكم
     let isAdminUnlocked = false;
     let rawTickets = [];
+    let isInitialLoadFinished = false;
+
+    // دالة إظهار الإشعار المرئي فقط (تعمل فقط عندما تفك قفل اللوحة)
+    function sendAdminNotification(empName, empDept, reqType) {
+      if (isAdminUnlocked && "Notification" in window && Notification.permission === "granted") {
+        const notification = new Notification("طلب دعم تقني جديد! 🛠️", {
+          body: `الموظف: ${empName}\nالقسم: ${empDept}\nنوع الخدمة: ${reqType}`,
+          icon: "https://cdn-icons-png.flaticon.com/512/1082/1082531.png",
+          dir: "rtl"
+        });
+
+        notification.onclick = function() {
+          window.focus();
+          this.close();
+        };
+      }
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       const interval = setInterval(() => {
@@ -325,6 +342,19 @@
           
           window.onSnapshot(q, (snapshot) => {
             rawTickets = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+            
+            // إرسال الإشعار فقط إذا كانت اللوحة مفتوحة وبعد انتهاء التحميل الأولي
+            if (isInitialLoadFinished) {
+              snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                  const newTicket = change.doc.data();
+                  sendAdminNotification(newTicket.empName, newTicket.empDept, newTicket.type);
+                }
+              });
+            } else {
+              isInitialLoadFinished = true;
+            }
+
             renderTickets();
             updateStats();
           });
@@ -365,6 +395,11 @@
       if (enteredPIN === ADMIN_PIN) {
         isAdminUnlocked = true;
         closePinModal();
+
+        // طلب إذن الإشعارات كمسؤول فقط بعد إدخال الرمز السري بنجاح
+        if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+          Notification.requestPermission();
+        }
 
         // Unlock Admin Dashboard
         document.getElementById('statsSection').classList.remove('hidden');
